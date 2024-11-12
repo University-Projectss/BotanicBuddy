@@ -68,7 +68,9 @@ public class AuthConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/accounts").permitAll()
-                        .anyRequest().permitAll() //authenticated()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .csrf((csrf) -> csrf.ignoringRequestMatchers("/login", "/accounts"))
                 .httpBasic(Customizer.withDefaults())
