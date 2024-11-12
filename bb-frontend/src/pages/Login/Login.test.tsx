@@ -74,6 +74,15 @@ describe("Login tests", () => {
       })
     );
 
+    const emailInput = screen.getByTestId("email-input");
+    const passwordInput = screen.getByTestId("password-input");
+
+    await userEvent.type(emailInput, "robert@email.com");
+    await userEvent.type(passwordInput, "Abcd1234!");
+
+    const submitButton = screen.getByTestId("submit-button");
+    await userEvent.click(submitButton);
+
     await waitFor(() => {
       expect(toaster.create).toHaveBeenCalled();
     });

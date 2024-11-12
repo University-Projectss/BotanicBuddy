@@ -4,10 +4,20 @@ import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 //A wrapper with all the providers needed in order to render the pages for testing
 const TestProviders = (props: { children: ReactNode }) => {
   const { children } = props;
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 5 * (60 * 1000), // 5 mins
+      },
+    },
+  });
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -32,14 +42,17 @@ const TestProviders = (props: { children: ReactNode }) => {
     toaster: {
       create: vi.fn(),
     },
+    Toaster: () => <div data-testid="toaster" />,
   }));
 
   return (
-    <ChakraProvider value={defaultSystem}>
-      <ThemeProvider attribute="class" disableTransitionOnChange>
-        <MemoryRouter>{children}</MemoryRouter>
-      </ThemeProvider>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider value={defaultSystem}>
+        <ThemeProvider attribute="class" disableTransitionOnChange>
+          <MemoryRouter>{children}</MemoryRouter>
+        </ThemeProvider>
+      </ChakraProvider>
+    </QueryClientProvider>
   );
 };
 
