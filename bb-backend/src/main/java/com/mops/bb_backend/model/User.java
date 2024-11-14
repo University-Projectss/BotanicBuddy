@@ -17,14 +17,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 30, unique = true)
-    private String nickname;
-
-    private String firstName;
-
-    private String lastName;
-
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+    @Column(name = "username", nullable = false, length = 30, unique = true)
+    private String username;
+
+    @Column(name = "photoUrl")
+    private String photoUrl;
 }

@@ -19,6 +19,12 @@ public class Account implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     protected Role role;
@@ -26,12 +32,6 @@ public class Account implements UserDetails {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
 
     protected Account() {}
 

@@ -15,5 +15,5 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
 
     @Modifying
     @Query("update Account set user = :user where email = :email and user = null")
-    int updateUserIfUnset(@Param("email") String email, @Param("user") User user);
+    int updateAccountWithUser(@Param("email") String email, @Param("user") User user);
 }

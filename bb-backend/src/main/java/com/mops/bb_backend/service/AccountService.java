@@ -5,13 +5,11 @@ import com.mops.bb_backend.model.Role;
 import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import com.mops.bb_backend.exception.AccountDoesNotExist;
-import com.mops.bb_backend.exception.AccountAlreadyExists;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -21,17 +19,13 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Account createUserAccount(String email, String password) {
-        if (accountRepository.findByEmail(email).isPresent()) {
-            throw new AccountAlreadyExists();
-        }
-
-        final String hashedPassword = passwordEncoder.encode(password);
+    public Account createAccount(String email, String password) {
+        final var hashedPassword = passwordEncoder.encode(password);
         var account = new Account(email, hashedPassword, Role.USER);
         return accountRepository.save(account);
     }
 
-    public Optional<Account> findAccountByEmail(String email) {
+    public Optional<Account> getAccountByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
 
@@ -43,13 +37,8 @@ public class AccountService {
         return null;
     }
 
-    public Account getAuthenticatedUserAccount() {
-        return accountRepository.findByEmail(getAuthenticatedUserEmail()).orElseThrow(AccountDoesNotExist::new);
-    }
-
-    public boolean linkProfileToAccount(User user, String email) {
-        var updatedRowsCount = accountRepository.updateUserIfUnset(email, user);
-        return updatedRowsCount > 0;
+    public void linkUserToAccount(User user, String email) {
+        accountRepository.updateAccountWithUser(email, user);
     }
 
 }

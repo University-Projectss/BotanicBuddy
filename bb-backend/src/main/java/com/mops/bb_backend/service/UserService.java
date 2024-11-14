@@ -1,12 +1,13 @@
 package com.mops.bb_backend.service;
 
-import com.mops.bb_backend.exception.AccountAlreadyHasProfile;
-import com.mops.bb_backend.exception.AccountDoesNotExist;
-import com.mops.bb_backend.exception.UserProfileNotFoundException;
+import com.mops.bb_backend.dto.UserDetailsDto;
+import com.mops.bb_backend.exception.CustomException;
+import com.mops.bb_backend.model.Account;
 import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -16,24 +17,38 @@ public class UserService {
     private final AccountService accountService;
 
     @Transactional
-    public User createUserProfile(String nickname, String firstName, String lastName, String accountEmail) {
-        var account = accountService.findAccountByEmail(accountEmail).orElseThrow(AccountDoesNotExist::new);
-        var user = User.builder().nickname(nickname).firstName(firstName).lastName(lastName).account(account).build();
-        var userCreated = userRepository.save(user);
-        var wasLinked = accountService.linkProfileToAccount(user, accountEmail);
-        if (!wasLinked) {
-            throw new AccountAlreadyHasProfile();
-        }
-        return userCreated;
+    public void createUserAccount(String email, String password, String username, String photoUrl) {
+        validateUserCredentials(email, username);
+        var account = accountService.createAccount(email, password);
+        var user = createUser(account, username, photoUrl);
+        accountService.linkUserToAccount(user, email);
     }
 
-    public User getAuthenticatedUserProfile() {
-        var userEmail = accountService.getAuthenticatedUserEmail();
-        var patientProfile = userRepository.findUserProfileByEmail(userEmail);
-        if (patientProfile == null) {
-            throw new UserProfileNotFoundException();
-        } else {
-            return patientProfile;
+    private User createUser(Account account, String username, String photoUrl) {
+        var user = User.builder().account(account).username(username).photoUrl(photoUrl).build();
+        return userRepository.save(user);
+    }
+
+    private void validateUserCredentials(String email, String username) {
+        if (accountService.getAccountByEmail(email).isPresent()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "An account with the provided email already exists!");
         }
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "An account with the provided username already exists!");
+        }
+    }
+
+    public UserDetailsDto getAuthenticatedUserProfile() {
+        var email = accountService.getAuthenticatedUserEmail();
+        var user = userRepository.findUserByAccountEmail(email);
+        return mapUserToUserDetailsDto(user);
+    }
+
+    private UserDetailsDto mapUserToUserDetailsDto(User user) {
+        return UserDetailsDto.builder().id(user.getId())
+                .email(user.getAccount().getEmail())
+                .username(user.getUsername())
+                .photoUrl(user.getPhotoUrl())
+                .build();
     }
 }
