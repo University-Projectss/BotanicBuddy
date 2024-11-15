@@ -24,6 +24,6 @@ public class User {
     @Column(name = "username", nullable = false, length = 30, unique = true)
     private String username;
 
-    @Column(name = "photoUrl")
+    @Column(name = "photo_url")
     private String photoUrl;
 }

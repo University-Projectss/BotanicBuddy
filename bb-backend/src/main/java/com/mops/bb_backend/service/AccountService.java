@@ -37,8 +37,9 @@ public class AccountService {
         return null;
     }
 
-    public void linkUserToAccount(User user, String email) {
-        accountRepository.updateAccountWithUser(email, user);
+    public void linkUserToAccount(User user, Account account) {
+        account.setUser(user);
+        accountRepository.save(account);
     }
 
 }

@@ -4,9 +4,7 @@ import com.mops.bb_backend.dto.UserDetailsDto;
 import com.mops.bb_backend.exception.CustomException;
 import com.mops.bb_backend.model.Account;
 import com.mops.bb_backend.model.User;
-import com.mops.bb_backend.repository.AccountRepository;
 import com.mops.bb_backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,17 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final AccountRepository accountRepository;
     private final AccountService accountService;
 
-    @Transactional
     public void createUserAccount(String email, String password, String username, String photoUrl) {
         validateUserCredentials(email, username);
         var account = accountService.createAccount(email, password);
         var user = createUser(account, username, photoUrl);
-        account.setUser(user);
-        accountRepository.save(account);
-        accountService.linkUserToAccount(user, email);
+        accountService.linkUserToAccount(user, account);
     }
 
     private User createUser(Account account, String username, String photoUrl) {
@@ -43,9 +37,13 @@ public class UserService {
     }
 
     public UserDetailsDto getAuthenticatedUserProfile() {
-        var email = accountService.getAuthenticatedUserEmail();
-        var user = userRepository.findUserByAccountEmail(email);
+        var user = getAuthenticatedUser();
         return mapUserToUserDetailsDto(user);
+    }
+
+    public User getAuthenticatedUser() {
+        var email = accountService.getAuthenticatedUserEmail();
+        return userRepository.findUserByAccountEmail(email);
     }
 
     private UserDetailsDto mapUserToUserDetailsDto(User user) {
