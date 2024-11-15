@@ -4,6 +4,7 @@ import com.mops.bb_backend.dto.UserDetailsDto;
 import com.mops.bb_backend.exception.CustomException;
 import com.mops.bb_backend.model.Account;
 import com.mops.bb_backend.model.User;
+import com.mops.bb_backend.repository.AccountRepository;
 import com.mops.bb_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final AccountService accountService;
 
     @Transactional
@@ -21,6 +23,8 @@ public class UserService {
         validateUserCredentials(email, username);
         var account = accountService.createAccount(email, password);
         var user = createUser(account, username, photoUrl);
+        account.setUser(user);
+        accountRepository.save(account);
         accountService.linkUserToAccount(user, email);
     }
 

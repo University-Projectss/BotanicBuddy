@@ -38,7 +38,7 @@ public class AuthController {
     final JwtEncoder encoder;
 
     @PostMapping("/auth/login")
-    public String login(@RequestBody Authentication authentication) {
+    public String login(Authentication authentication) {
         Instant now = Instant.now();
         long expiry = 36000L;
         String scope = authentication.getAuthorities().stream()

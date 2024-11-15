@@ -71,7 +71,7 @@ public class AuthConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .csrf((csrf) -> csrf.ignoringRequestMatchers("/login", "/accounts"))
+                .csrf((csrf) -> csrf.ignoringRequestMatchers("/auth/login", "/accounts"))
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer((customizer) -> customizer.jwt(Customizer.withDefaults()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
