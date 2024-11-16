@@ -24,10 +24,23 @@ import { Toaster, toaster } from "@/components/ui/toaster";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/apiClient";
 import { Button } from "@/components/ui/button";
+import { RiCharacterRecognitionFill } from "react-icons/ri";
+import { LuFileUp } from "react-icons/lu";
+import {
+  FileInput,
+  FileUploadClearTrigger,
+  FileUploadLabel,
+  FileUploadRoot,
+} from "@/components/ui/file-button";
+import { CloseButton } from "@/components/ui/close-button";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebase-config";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(8, "Password must have at least 8 characters"),
+  username: z.string().min(3, "Username must have at least 3 characters"),
+  photoUrl: z.string().min(1, "Profile image is required"),
 });
 
 type LoginSchemaType = z.infer<typeof loginSchema>;
@@ -38,23 +51,47 @@ const Login = () => {
 
   const {
     register,
-    formState: { errors },
+    formState: { isValid, errors },
     handleSubmit,
+    setValue,
+    watch,
+    trigger,
   } = useForm<LoginSchemaType>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    resolver: zodResolver(
+      authType === "register"
+        ? loginSchema
+        : loginSchema.pick({ email: true, password: true })
+    ),
+    defaultValues: { email: "", password: "", username: "", photoUrl: "" },
+    mode: "onBlur",
   });
+  const email = watch("email");
 
-  const loginMutation = useMutation({
+  const authMutations = useMutation({
     mutationFn: async (formData: LoginSchemaType) => {
-      const res = await apiClient.post("/auth/login", formData);
-      return res;
+      if (authType === "login") {
+        const { data } = await apiClient.post(
+          "/auth/login",
+          {},
+          { auth: { username: formData.email, password: formData.password } }
+        );
+        return data;
+      } else {
+        await apiClient.post("/accounts", formData);
+        const { data } = await apiClient.post(
+          "/auth/login",
+          {},
+          { auth: { username: formData.email, password: formData.password } }
+        );
+        return data;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (token) => {
+      localStorage.setItem("bbToken", token);
       navigate("/");
     },
-    onError: () => {
-      toaster.create({ description: "Could not login", type: "error" });
+    onError: (error) => {
+      toaster.create({ description: error.message, type: "error" });
     },
   });
 
@@ -67,11 +104,12 @@ const Login = () => {
         flex={1}
       >
         <Flex
+          width="60%"
           direction="column"
           gap={4}
           as="form"
           onSubmit={handleSubmit((data) => {
-            loginMutation.mutate(data);
+            authMutations.mutate(data);
           })}
         >
           <Text textStyle="5xl">
@@ -106,18 +144,85 @@ const Login = () => {
               />
             </InputGroup>
           </Field>
+
+          {authType === "register" && (
+            <>
+              <Field
+                label="Username"
+                invalid={!!errors.username}
+                errorText={errors.username?.message}
+              >
+                <InputGroup
+                  width="100%"
+                  startElement={<RiCharacterRecognitionFill />}
+                >
+                  <Input
+                    data-testid="username-input"
+                    placeholder="Choose a username"
+                    {...register("username")}
+                  />
+                </InputGroup>
+              </Field>
+
+              <Field
+                invalid={!!errors.photoUrl}
+                errorText={errors.photoUrl?.message}
+              >
+                <FileUploadRoot
+                  maxFiles={1}
+                  gap="1"
+                  accept="image/*"
+                  onFileAccept={async (details) => {
+                    let documentRef = ref(
+                      storage,
+                      `${email}/${details.files[0].name}`
+                    );
+
+                    await uploadBytes(documentRef, details.files[0]);
+                    let documentUrl = await getDownloadURL(documentRef);
+
+                    setValue("photoUrl", documentUrl);
+                    trigger();
+                  }}
+                >
+                  <FileUploadLabel>Profile image</FileUploadLabel>
+                  <InputGroup
+                    w="full"
+                    startElement={<LuFileUp />}
+                    endElement={
+                      <FileUploadClearTrigger asChild>
+                        <CloseButton
+                          me="-1"
+                          size="xs"
+                          variant="plain"
+                          focusVisibleRing="inside"
+                          focusRingWidth="2px"
+                          pointerEvents="auto"
+                          color="fg.subtle"
+                        />
+                      </FileUploadClearTrigger>
+                    }
+                  >
+                    <FileInput />
+                  </InputGroup>
+                </FileUploadRoot>
+              </Field>
+            </>
+          )}
+
           <Button
             data-testid="submit-button"
             colorPalette="green"
             type="submit"
-            loading={loginMutation.isPending}
+            loading={authMutations.isPending}
+            disabled={!isValid}
           >
             {authType[0].toUpperCase() + authType.slice(1) + "!"}
           </Button>
 
           <Spacer />
 
-          <Text>
+          <Text width="100%" textAlign="center">
             {authType === "login"
               ? "Don't have an account?"
               : "Already have an account?"}{" "}
