@@ -4,7 +4,7 @@ import Login from "../pages/Login";
 
 const Routes = () => {
   return createRoutesFromElements(
-    <Route errorElement={undefined}>
+    <Route errorElement={<>Error?</>}>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
     </Route>

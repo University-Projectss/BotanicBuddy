@@ -1,40 +1,40 @@
-import {
-  Box,
-  ClientOnly,
-  Flex,
-  Skeleton,
-  Text,
-  Image,
-  Spacer,
-  Input,
-} from "@chakra-ui/react";
-import { Field } from "@/components/ui/field";
-import { ColorModeToggle } from "../../color-mode-toggle";
-import logo from "../../assets/logo.png";
-import flowerGirl from "../../assets/flower-girl.svg";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { InputGroup } from "@/components/ui/input-group";
-import { FaUser } from "react-icons/fa6";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { Toaster, toaster } from "@/components/ui/toaster";
-import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/apiClient";
 import { Button } from "@/components/ui/button";
-import { RiCharacterRecognitionFill } from "react-icons/ri";
-import { LuFileUp } from "react-icons/lu";
+import { CloseButton } from "@/components/ui/close-button";
+import { Field } from "@/components/ui/field";
 import {
   FileInput,
   FileUploadClearTrigger,
   FileUploadLabel,
   FileUploadRoot,
 } from "@/components/ui/file-button";
-import { CloseButton } from "@/components/ui/close-button";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { InputGroup } from "@/components/ui/input-group";
+import { Toaster, toaster } from "@/components/ui/toaster";
 import { storage } from "@/firebase-config";
+import {
+  Box,
+  ClientOnly,
+  Flex,
+  Image,
+  Input,
+  Skeleton,
+  Spacer,
+  Text,
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaUser } from "react-icons/fa6";
+import { LuFileUp } from "react-icons/lu";
+import { RiCharacterRecognitionFill, RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import flowerGirl from "../../assets/flower-girl.svg";
+import logo from "../../assets/logo.png";
+import { ColorModeToggle } from "../../color-mode-toggle";
+import { AuthContext } from "@/App";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -47,6 +47,7 @@ type LoginSchemaType = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { fetchAccount } = useContext(AuthContext);
   const [authType, setAuthType] = useState<"login" | "register">("login");
 
   const {
@@ -86,8 +87,9 @@ const Login = () => {
         return data;
       }
     },
-    onSuccess: (token) => {
+    onSuccess: async (token) => {
       localStorage.setItem("bbToken", token);
+      await fetchAccount();
       navigate("/");
     },
     onError: (error) => {
