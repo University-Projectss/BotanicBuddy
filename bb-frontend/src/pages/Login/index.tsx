@@ -65,7 +65,7 @@ const Login = () => {
         : loginSchema.pick({ email: true, password: true })
     ),
     defaultValues: { email: "", password: "", username: "", photoUrl: "" },
-    mode: "onBlur",
+    mode: "onChange",
   });
   const email = watch("email");
 
@@ -94,8 +94,6 @@ const Login = () => {
       navigate("/");
     },
     onError: (error: any) => {
-      console.log(error.response.data.message);
-
       toaster.create({
         description: error.response.data.message,
         type: "error",
