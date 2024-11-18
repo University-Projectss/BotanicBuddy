@@ -57,6 +57,7 @@ const Login = () => {
     setValue,
     watch,
     trigger,
+    reset,
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(
       authType === "register"
@@ -92,8 +93,13 @@ const Login = () => {
       await fetchAccount();
       navigate("/");
     },
-    onError: (error) => {
-      toaster.create({ description: error.message, type: "error" });
+    onError: (error: any) => {
+      console.log(error.response.data.message);
+
+      toaster.create({
+        description: error.response.data.message,
+        type: "error",
+      });
     },
   });
 
@@ -236,6 +242,7 @@ const Login = () => {
               cursor="pointer"
               onClick={() => {
                 setAuthType(authType === "login" ? "register" : "login");
+                reset();
               }}
             >
               {authType === "login" ? "Create one!" : "Login!"}

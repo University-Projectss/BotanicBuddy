@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCV2ilI0puL9V3iD6dfx2UbL9dZnB-pui0",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "licenta-fmi.firebaseapp.com",
   projectId: "licenta-fmi",
   storageBucket: "licenta-fmi.appspot.com",
