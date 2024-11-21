@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthContext } from "@/App";
 
 //A wrapper with all the providers needed in order to render the pages for testing
 const TestProviders = (props: { children: ReactNode }) => {
@@ -38,6 +39,13 @@ const TestProviders = (props: { children: ReactNode }) => {
     useNavigate: vi.fn(),
   }));
 
+  vi.mock("firebase/storage", () => ({
+    ref: vi.fn(),
+    uploadBytes: vi.fn(),
+    getDownloadURL: vi.fn(),
+    getStorage: vi.fn(),
+  }));
+
   vi.mock("../components/ui/toaster", () => ({
     toaster: {
       create: vi.fn(),
@@ -47,11 +55,19 @@ const TestProviders = (props: { children: ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider value={defaultSystem}>
-        <ThemeProvider attribute="class" disableTransitionOnChange>
-          <MemoryRouter>{children}</MemoryRouter>
-        </ThemeProvider>
-      </ChakraProvider>
+      <AuthContext.Provider
+        value={{
+          authenticatedAccount: null,
+          setAuthenticatedAccount: vi.fn(),
+          fetchAccount: vi.fn(),
+        }}
+      >
+        <ChakraProvider value={defaultSystem}>
+          <ThemeProvider attribute="class" disableTransitionOnChange>
+            <MemoryRouter>{children}</MemoryRouter>
+          </ThemeProvider>
+        </ChakraProvider>
+      </AuthContext.Provider>
     </QueryClientProvider>
   );
 };
