@@ -36,4 +36,19 @@ public class Plant {
 
     @Column(name = "upload_date", nullable = false)
     private LocalDate uploadDate;
+
+    @Column(name = "care_recommendation", columnDefinition = "TEXT")
+    private String careRecommendation;
+
+    @Column(name = "watering_frequency")
+    private int wateringFrequency;
+
+    @Column(name = "light")
+    private String light;
+
+    @Column(name = "soil")
+    private String soil;
+
+    @Column(name = "temperature")
+    private String temperature;
 }

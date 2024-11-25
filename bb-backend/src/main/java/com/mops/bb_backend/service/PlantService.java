@@ -1,5 +1,7 @@
 package com.mops.bb_backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mops.bb_backend.dto.PlantDetailsDto;
 import com.mops.bb_backend.dto.PlantPaginationDto;
 import com.mops.bb_backend.exception.CustomException;
@@ -21,6 +23,7 @@ import static com.mops.bb_backend.utils.Converter.convertStringToUUID;
 public class PlantService {
     private final PlantRepository plantRepository;
     private final UserService userService;
+    private final CareRecommendationService careRecommendationService;
 
     public void addPlant(String commonName, String scientificName, String family, String photoUrl) {
         var user = userService.getAuthenticatedUser();
@@ -42,6 +45,24 @@ public class PlantService {
         var uuid = convertStringToUUID(id);
         var plant = plantRepository.findById(uuid)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No plant found with the provided ID!"));
+
+        if (plant.getCareRecommendation() == null) {
+            var response = careRecommendationService.detectCareRecommendations(plant.getScientificName())
+                    .orElseThrow(() -> new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate care recommendations!"));
+            var objectMapper = new ObjectMapper();
+            try {
+                var jsonNode = objectMapper.readTree(response);
+                plant.setCareRecommendation(jsonNode.get("recommendation").asText());
+                plant.setWateringFrequency(Integer.parseInt(jsonNode.get("watering_frequency").asText()));
+                plant.setLight(jsonNode.get("light").asText());
+                plant.setSoil(jsonNode.get("soil").asText());
+                plant.setTemperature(jsonNode.get("temperature").asText());
+            } catch (JsonProcessingException e) {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse care recommendations: " + e.getMessage());
+            }
+            plantRepository.save(plant);
+        }
+
         return mapPlantToPlantDetailsDto(plant);
     }
 
@@ -64,6 +85,11 @@ public class PlantService {
                 .family(plant.getFamily())
                 .photoUrl(plant.getPhotoUrl())
                 .uploadDate(plant.getUploadDate().toString())
+                .careRecommendation(plant.getCareRecommendation())
+                .wateringFrequency(plant.getWateringFrequency())
+                .light(plant.getLight())
+                .soil(plant.getSoil())
+                .temperature(plant.getTemperature())
                 .build();
     }
 }
