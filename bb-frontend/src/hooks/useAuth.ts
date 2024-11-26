@@ -1,5 +1,5 @@
 import { apiClient } from "@/apiClient";
-import { AuthenticatedAccount } from "@/types";
+import { AuthenticatedAccount } from "@/types/auth";
 import { useEffect, useState } from "react";
 
 const useAuth = () => {

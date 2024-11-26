@@ -6,9 +6,9 @@ import useAuth from "./hooks/useAuth";
 import { createContext } from "react";
 
 export const AuthContext = createContext<ReturnType<typeof useAuth>>(null!);
+export const queryClient = new QueryClient();
 
 const App = () => {
-  const queryClient = new QueryClient();
   const authData = useAuth();
   return (
     <QueryClientProvider client={queryClient}>

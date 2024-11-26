@@ -1,4 +1,4 @@
-import { AuthContext } from "@/App";
+import { AuthContext, queryClient } from "@/App";
 import { apiClient } from "@/apiClient";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,15 +17,37 @@ import {
 } from "@/components/ui/file-button";
 import { toaster } from "@/components/ui/toaster";
 import { storage } from "@/firebase-config";
-import { Box, Center, Spinner, useDisclosure } from "@chakra-ui/react";
+import { PlantsResponse } from "@/types/plant";
+import {
+  Box,
+  Center,
+  Flex,
+  Image,
+  Spinner,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { FileAcceptDetails } from "node_modules/@chakra-ui/react/dist/types/components/file-upload/namespace";
 import { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const { authenticatedAccount } = useContext(AuthContext);
   const { open, onOpen, onClose } = useDisclosure();
   const [isProcessingImage, setIsProcessingImage] = useState<boolean>(false);
+
+  const { data: plantsResponse } = useQuery({
+    queryKey: ["plants"],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PlantsResponse>("/plants", {
+        params: { pageNumber: 0, pageSize: 100 },
+      });
+
+      return data;
+    },
+  });
 
   const handleImageUpload = async (details: FileAcceptDetails) => {
     try {
@@ -73,6 +95,7 @@ const Home = () => {
           description: "Plant added successfully!",
           type: "success",
         });
+        queryClient.invalidateQueries({ queryKey: ["plants"] });
       }
       onClose();
     } catch (error) {
@@ -85,7 +108,7 @@ const Home = () => {
   };
 
   return (
-    <Box textAlign="center" fontSize="xl" pt="30vh">
+    <Flex direction="column" gap={10}>
       <DialogRoot placement="center" motionPreset="slide-in-bottom" open={open}>
         <DialogTrigger asChild>
           <Button colorPalette="green" onClick={onOpen}>
@@ -124,7 +147,37 @@ const Home = () => {
           </DialogBody>
         </DialogContent>
       </DialogRoot>
-    </Box>
+
+      <Flex direction="row" gap={32} flexWrap="wrap">
+        {plantsResponse &&
+          plantsResponse.plants.map((plant) => (
+            <Box
+              key={plant.id}
+              position="relative"
+              width={200}
+              height={200}
+              borderRadius={20}
+              overflow="hidden"
+              as={Link}
+              //@ts-expect-error
+              to={`/plant/${plant.id}`}
+            >
+              <Image src={plant.photoUrl} width={200} height={200} />
+              <Flex
+                py={2}
+                position="absolute"
+                bottom={0}
+                width="100%"
+                bgColor="rgba(0, 0, 0, 0.5)"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text color="white">{plant.commonName}</Text>
+              </Flex>
+            </Box>
+          ))}
+      </Flex>
+    </Flex>
   );
 };
 
