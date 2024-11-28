@@ -17,37 +17,16 @@ import {
 } from "@/components/ui/file-button";
 import { toaster } from "@/components/ui/toaster";
 import { storage } from "@/firebase-config";
-import { PlantsResponse } from "@/types/plant";
-import {
-  Box,
-  Center,
-  Flex,
-  Image,
-  Spinner,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+import { Box, Center, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { FileAcceptDetails } from "node_modules/@chakra-ui/react/dist/types/components/file-upload/namespace";
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import PaginatedSection from "./PaginatedSection";
 
 const Home = () => {
   const { authenticatedAccount } = useContext(AuthContext);
   const { open, onOpen, onClose } = useDisclosure();
   const [isProcessingImage, setIsProcessingImage] = useState<boolean>(false);
-
-  const { data: plantsResponse } = useQuery({
-    queryKey: ["plants"],
-    queryFn: async () => {
-      const { data } = await apiClient.get<PlantsResponse>("/plants", {
-        params: { pageNumber: 0, pageSize: 100 },
-      });
-
-      return data;
-    },
-  });
 
   const handleImageUpload = async (details: FileAcceptDetails) => {
     try {
@@ -108,10 +87,10 @@ const Home = () => {
   };
 
   return (
-    <Flex direction="column" gap={10}>
+    <Flex direction="column" alignItems="center" gap={10} width="100%">
       <DialogRoot placement="center" motionPreset="slide-in-bottom" open={open}>
         <DialogTrigger asChild>
-          <Button colorPalette="green" onClick={onOpen}>
+          <Button colorPalette="green" onClick={onOpen} width={200}>
             + Add Plant
           </Button>
         </DialogTrigger>
@@ -148,35 +127,7 @@ const Home = () => {
         </DialogContent>
       </DialogRoot>
 
-      <Flex direction="row" gap={32} flexWrap="wrap">
-        {plantsResponse &&
-          plantsResponse.plants.map((plant) => (
-            <Box
-              key={plant.id}
-              position="relative"
-              width={200}
-              height={200}
-              borderRadius={20}
-              overflow="hidden"
-              as={Link}
-              //@ts-expect-error
-              to={`/plant/${plant.id}`}
-            >
-              <Image src={plant.photoUrl} width={200} height={200} />
-              <Flex
-                py={2}
-                position="absolute"
-                bottom={0}
-                width="100%"
-                bgColor="rgba(0, 0, 0, 0.5)"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text color="white">{plant.commonName}</Text>
-              </Flex>
-            </Box>
-          ))}
-      </Flex>
+      <PaginatedSection />
     </Flex>
   );
 };
