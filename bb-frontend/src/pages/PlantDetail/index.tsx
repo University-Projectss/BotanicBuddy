@@ -1,16 +1,10 @@
 import { useParams } from "react-router-dom";
-import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/apiClient";
-
-interface PlantDetailResponse {
-  id: string;
-  commonName: string;
-  scientificName: string;
-  family: string;
-  photoUrl: string;
-  uploadDate: string;
-}
+import { PlantDetailResponse } from "@/types/plant";
+import { FiInfo } from "react-icons/fi";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const PlantDetail = () => {
   const { plantId } = useParams<{ plantId: string }>();
@@ -63,17 +57,40 @@ const PlantDetail = () => {
           <Text fontSize="4xl" fontWeight={700} mb={4}>
             {data.commonName}
           </Text>
-          <Box>
-            <Text fontSize="lg" mb={2}>
+          <Flex direction="column" gap={2} fontSize="lg">
+            <Text>
               <strong>Scientific Name:</strong> {data.scientificName}
             </Text>
-            <Text fontSize="lg" mb={2}>
+            <Text>
               <strong>Family:</strong> {data.family}
             </Text>
-            <Text fontSize="lg" mb={2}>
-              <strong>Upload Date:</strong> {new Date(data.uploadDate).toDateString()}
+            <Text>
+              <strong>Upload Date:</strong>{" "}
+              {new Date(data.uploadDate).toDateString()}
             </Text>
-          </Box>
+            <Flex gap={2} alignItems="center">
+              <Text>
+                <strong>Water frequency:</strong> {data.wateringFrequency}
+              </Text>
+              <Tooltip content="Number of days between watering">
+                <Icon color="gray.500" cursor="pointer">
+                  <FiInfo />
+                </Icon>
+              </Tooltip>
+            </Flex>
+            <Text>
+              <strong>Light:</strong> {data.light}
+            </Text>
+            <Text>
+              <strong>Soil:</strong> {data.soil}
+            </Text>
+            <Text>
+              <strong>Temperature:</strong> {data.temperature}
+            </Text>
+            <Text>
+              <strong>Care Recommendation:</strong> {data.careRecommendation}
+            </Text>
+          </Flex>
         </Box>
 
         <Flex direction="column" align="center" gap={4}>
@@ -87,19 +104,13 @@ const PlantDetail = () => {
             mb={4}
           />
           <Flex direction="row" gap={4}>
-            <Button
-              onClick={() => console.log("Plant watered successfully")}
-            >
+            <Button onClick={() => console.log("Plant watered successfully")}>
               💧 Water
             </Button>
-            <Button
-              onClick={() => console.log("Soil changed successfully")}
-            >
+            <Button onClick={() => console.log("Soil changed successfully")}>
               🌱 Change Soil
             </Button>
-            <Button
-              onClick={() => console.log("Plant deleted successfully")}
-            >
+            <Button onClick={() => console.log("Plant deleted successfully")}>
               🗑️ Delete
             </Button>
           </Flex>
