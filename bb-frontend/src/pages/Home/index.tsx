@@ -1,4 +1,4 @@
-import { AuthContext } from "@/App";
+import { AuthContext, queryClient } from "@/App";
 import { apiClient } from "@/apiClient";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/file-button";
 import { toaster } from "@/components/ui/toaster";
 import { storage } from "@/firebase-config";
-import { Box, Center, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Box, Center, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { FileAcceptDetails } from "node_modules/@chakra-ui/react/dist/types/components/file-upload/namespace";
 import { useContext, useState } from "react";
+import PaginatedSection from "./PaginatedSection";
 
 const Home = () => {
   const { authenticatedAccount } = useContext(AuthContext);
@@ -73,6 +74,7 @@ const Home = () => {
           description: "Plant added successfully!",
           type: "success",
         });
+        queryClient.invalidateQueries({ queryKey: ["plants"] });
       }
       onClose();
     } catch (error) {
@@ -85,10 +87,10 @@ const Home = () => {
   };
 
   return (
-    <Box textAlign="center" fontSize="xl" pt="30vh">
+    <Flex direction="column" alignItems="center" gap={10} width="100%">
       <DialogRoot placement="center" motionPreset="slide-in-bottom" open={open}>
         <DialogTrigger asChild>
-          <Button colorPalette="green" onClick={onOpen}>
+          <Button colorPalette="green" onClick={onOpen} width={200}>
             + Add Plant
           </Button>
         </DialogTrigger>
@@ -124,7 +126,9 @@ const Home = () => {
           </DialogBody>
         </DialogContent>
       </DialogRoot>
-    </Box>
+
+      <PaginatedSection />
+    </Flex>
   );
 };
 

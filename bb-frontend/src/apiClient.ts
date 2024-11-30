@@ -24,7 +24,10 @@ apiClient.interceptors.response.use(
       (error.response.status === 401 || error.response.status === 403)
     ) {
       localStorage.removeItem("bbToken");
-      // window.location.reload();
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login");
+        return;
+      }
     }
     return Promise.reject(error);
   }

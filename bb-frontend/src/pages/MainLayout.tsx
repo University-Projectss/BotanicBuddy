@@ -15,13 +15,14 @@ const MainLayout = () => {
       alignItems="center"
       justifyContent="flex-start"
       position="relative"
+      px={6}
+      width="100vw"
     >
       <Flex
         width="100%"
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        px={4}
         position="sticky"
         top={0}
         height="100px"
