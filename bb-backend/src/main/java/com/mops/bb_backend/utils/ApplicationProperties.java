@@ -11,4 +11,13 @@ import org.springframework.context.annotation.PropertySource;
 public class ApplicationProperties {
     @Value( "${openai.api.key}" )
     private String openApiKey;
+
+    @Value( "${sendgrid.api.key}" )
+    private String sendgridApiKey;
+
+    @Value( "${sendgrid.from.email}" )
+    private String sendgridFromEmail;
+
+    @Value( "${sendgrid.from.name}" )
+    private String sendgridFromName;
 }

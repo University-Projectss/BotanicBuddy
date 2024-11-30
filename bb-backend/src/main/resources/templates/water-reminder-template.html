@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Water your plants!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            color: #444;
+        }
+        .footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        .image-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <h1>🌱 Hi, {{username}}!</h1>
+    <p>We hope you're having a great day! 🌞 This is your friendly reminder to take care of your beloved plants.
+        Here are the plants that need watering today:</p>
+    <ul>
+        {{plant_list}}
+    </ul>
+    <p>Make sure to give them just the right amount of water to keep them happy and healthy! 😊
+        If you have any questions about your plants or their care, feel free to reach out our ChatBot, directly in the app.</p>
+    <div class="image-container">
+        <img src="https://firebasestorage.googleapis.com/v0/b/licenta-fmi.appspot.com/o/diverse%2Fbottom.png?alt=media&token=1baffc8d-10ac-4bf7-8e16-3ac13b0c0198" alt="logo"/>
+    </div>
+    <div class="footer">
+        <p>Sent by BotanicBuddy on ({{date}})</p>
+    </div>
+</div>
+</body>
+</html>

@@ -14,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import static com.mops.bb_backend.utils.Converter.convertStringToUUID;
 
@@ -64,6 +67,17 @@ public class PlantService {
         }
 
         return mapPlantToPlantDetailsDto(plant);
+    }
+
+    public List<Plant> getPlantsToWater() {
+        List<Plant> plantsToWater = new ArrayList<>();
+        plantRepository.findAll().forEach(plant -> {
+            var daysBetween = ChronoUnit.DAYS.between(plant.getUploadDate(), LocalDate.now());
+            if (daysBetween % plant.getWateringFrequency() == 0) {
+                plantsToWater.add(plant);
+            }
+        });
+        return plantsToWater;
     }
 
     private static Plant mapPlantRegistrationDtoToPlant(String commonName, String scientificName, String family, String photoUrl, User user) {
