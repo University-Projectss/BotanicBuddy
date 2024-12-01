@@ -31,6 +31,7 @@ public class PlantService {
     public void addPlant(String commonName, String scientificName, String family, String photoUrl) {
         var user = userService.getAuthenticatedUser();
         var plant = mapPlantRegistrationDtoToPlant(commonName, scientificName, family, photoUrl, user);
+        setCareRecommendation(plant);
         plantRepository.save(plant);
     }
 
@@ -49,24 +50,24 @@ public class PlantService {
         var plant = plantRepository.findById(uuid)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No plant found with the provided ID!"));
 
-        if (plant.getCareRecommendation() == null) {
-            var response = careRecommendationService.detectCareRecommendations(plant.getScientificName())
-                    .orElseThrow(() -> new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate care recommendations!"));
-            var objectMapper = new ObjectMapper();
-            try {
-                var jsonNode = objectMapper.readTree(response);
-                plant.setCareRecommendation(jsonNode.get("recommendation").asText());
-                plant.setWateringFrequency(Integer.parseInt(jsonNode.get("watering_frequency").asText()));
-                plant.setLight(jsonNode.get("light").asText());
-                plant.setSoil(jsonNode.get("soil").asText());
-                plant.setTemperature(jsonNode.get("temperature").asText());
-            } catch (JsonProcessingException e) {
-                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse care recommendations: " + e.getMessage());
-            }
-            plantRepository.save(plant);
-        }
-
         return mapPlantToPlantDetailsDto(plant);
+    }
+
+    public void setCareRecommendation(Plant plant) {
+        var response = careRecommendationService.detectCareRecommendations(plant.getScientificName())
+                .orElseThrow(() -> new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate care recommendations!"));
+        var objectMapper = new ObjectMapper();
+        try {
+            var jsonNode = objectMapper.readTree(response);
+            plant.setCareRecommendation(jsonNode.get("recommendation").asText());
+            plant.setWateringFrequency(Integer.parseInt(jsonNode.get("watering_frequency").asText()));
+            plant.setLight(jsonNode.get("light").asText());
+            plant.setSoil(jsonNode.get("soil").asText());
+            plant.setTemperature(jsonNode.get("temperature").asText());
+        } catch (JsonProcessingException e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse care recommendations: " + e.getMessage());
+        }
+        plantRepository.save(plant);
     }
 
     public List<Plant> getPlantsToWater() {

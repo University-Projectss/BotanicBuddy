@@ -8,6 +8,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.mops.bb_backend.utils.Converter.formatDate;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +33,7 @@ public class EmailService {
     private final PlantService plantService;
 
     @Scheduled(cron = "${sendgrid.water.reminder.scheduler}")
+    @Transactional
     public void sendWaterReminder() {
         var plantsToWater = plantService.getPlantsToWater();
 
@@ -40,13 +44,13 @@ public class EmailService {
                 try {
                     var templatePath = "src/main/resources/templates/water-reminder-template.html";
                     var plantListHtml = plants.stream()
-                            .map(plant -> "<li>" + plant.getCommonName() + "(" + plant.getUploadDate().toString() + ")" + "</li>")
+                            .map(plant -> "<li>" + plant.getCommonName() + " (uploaded on " + formatDate(plant.getUploadDate()) + ")" + "</li>")
                             .collect(Collectors.joining());
 
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("username", user.getUsername());
                     placeholders.put("plant_list", plantListHtml);
-                    placeholders.put("date", LocalDate.now().toString());
+                    placeholders.put("date", formatDate(LocalDate.now()));
 
                     var emailContent = loadHtmlTemplate(templatePath, placeholders);
                     sendEmail(user.getAccount().getEmail(), "BotanicBuddy Reminder: Water Your Plants!", emailContent);
