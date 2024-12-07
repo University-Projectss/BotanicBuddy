@@ -10,6 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.UUID;
 
 public interface PlantRepository extends CrudRepository<Plant, UUID> {
-    @Query("SELECT p from Plant p JOIN User u ON p.user.id = u.id")
+    @Query("SELECT p FROM Plant p WHERE p.user = :user")
     Page<Plant> findAllByUser(Pageable pageable, User user);
 }
