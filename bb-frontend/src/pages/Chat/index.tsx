@@ -8,28 +8,62 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import emptyChat from "../../assets/empty-chat.svg";
 import { LuFlower2 } from "react-icons/lu";
 
-// [
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-//   "What plant is the best in house? What plant is the best in house? What plant is the best in house? ",
-//   "The best plant you want to keep in your house is a biiiiig rose that looks very good and smells awesome, i hope you will get one soon",
-// ];
 
 const Chat = () => {
+
+  const CHAT_URL = import.meta.env.VITE_CHAT_URL;
+
   const [conversation, setConversation] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+
+  useEffect(() => {
+    const ws = new WebSocket(CHAT_URL);
+    let isWebSocketOpen = false;
+
+    ws.onmessage = (event) => {
+      isWebSocketOpen = true;
+      const message = event.data;
+  
+      setConversation((prev) => {
+        if (prev.length === 0 || (prev.length % 2 !== 0)) {
+          // If no messages exist or the last message is already a user message, start a new GPT response
+          return [...prev, message];
+        } else {
+          // Concatenate to the last GPT response
+          const updatedConversation = [...prev];
+          updatedConversation[updatedConversation.length - 1] += message;
+          return updatedConversation;
+        }
+      });
+    };
+
+    setSocket(ws);
+
+    return () => {
+      if (isWebSocketOpen && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (inputValue.trim() === "" || !socket) return;
+    setConversation((prev) => [...prev, inputValue]);
+    socket.send(inputValue);
+    setInputValue("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
 
   return (
     <Flex
@@ -72,7 +106,8 @@ const Chat = () => {
             if (index % 2 == 0) {
               //user's message
               return (
-                <Flex
+                <Flex 
+                  key={`user-message-${index}`}
                   bgColor={{ base: "gray.100", _dark: "gray.900" }}
                   borderRadius="lg"
                   maxW="60%"
@@ -85,14 +120,19 @@ const Chat = () => {
             } else {
               //gpt's response
               return (
-                <Flex alignItems="flex-start" gap={2} alignSelf="flex-start">
+                <Flex 
+                  key={`gpt-message-${index}`} 
+                  alignItems="flex-start" 
+                  gap={2} 
+                  alignSelf="flex-start"
+                >
                   <Box
                     border="2px solid"
                     borderColor={{ base: "green.500", _dark: "green.700" }}
                     p={1}
                     borderRadius="lg"
                   >
-                    <Icon
+                   <Icon
                       size="xl"
                       color={{ base: "green.500", _dark: "green.700" }}
                     >
@@ -107,7 +147,7 @@ const Chat = () => {
                     border="2px solid"
                     borderColor={{ base: "green.500", _dark: "green.700" }}
                   >
-                    <Text>{message}</Text>
+                    <Text whiteSpace="pre-wrap">{message}</Text>
                   </Flex>
                 </Flex>
               );
@@ -119,13 +159,16 @@ const Chat = () => {
       <InputGroup
         width="100%"
         endElement={
-          <IconButton size="md" variant="ghost">
+          <IconButton size="md" variant="ghost" onClick={sendMessage}>
             <IoMdSend />
           </IconButton>
         }
       >
         <Input
           placeholder="Ask a question"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyPress}
           borderRadius="full"
           size="lg"
           colorPalette="green"
