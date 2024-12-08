@@ -4,11 +4,13 @@ import { Avatar } from "@/components/ui/avatar";
 import { Toaster } from "@/components/ui/toaster";
 import { ClientOnly, Flex, Image, Skeleton } from "@chakra-ui/react";
 import { useContext } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 const MainLayout = () => {
   const { authenticatedAccount } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   return (
     <Flex
       direction="column"
@@ -25,11 +27,29 @@ const MainLayout = () => {
         justifyContent="space-between"
         position="sticky"
         top={0}
-        height="100px"
+        height="10vh"
       >
-        <Image src={logo} height="50px" objectFit="contain" />
+        <Image
+          cursor="pointer"
+          onClick={() => {
+            navigate("/");
+          }}
+          src={logo}
+          height="50px"
+          objectFit="contain"
+        />
 
         <Flex direction="row" alignItems="center" justify="center" gap={4}>
+          <Link
+            to="/chat"
+            style={{
+              textDecoration:
+                window.location.pathname === "/chat" ? "underline" : "",
+            }}
+          >
+            Chat
+          </Link>
+
           <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
             <ColorModeToggle />
           </ClientOnly>

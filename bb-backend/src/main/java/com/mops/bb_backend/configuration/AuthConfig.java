@@ -69,6 +69,7 @@ public class AuthConfig {
                         .requestMatchers(HttpMethod.POST, "/accounts").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/chat").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf((csrf) -> csrf.ignoringRequestMatchers("/auth/login", "/accounts"))
