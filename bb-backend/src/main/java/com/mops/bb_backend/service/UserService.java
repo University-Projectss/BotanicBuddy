@@ -5,15 +5,19 @@ import com.mops.bb_backend.exception.CustomException;
 import com.mops.bb_backend.model.Account;
 import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final AccountService accountService;
+    private final LocationService locationService;
 
     public void createUserAccount(String email, String password, String username, String photoUrl) {
         validateUserCredentials(email, username);
@@ -44,6 +48,19 @@ public class UserService {
     public User getAuthenticatedUser() {
         var email = accountService.getAuthenticatedUserEmail();
         return userRepository.findUserByAccountEmail(email);
+    }
+
+    public void setUserLocation(HttpServletRequest request) {
+        var user = getAuthenticatedUser();
+        if (user.getLocation() != null) {
+            return;
+        }
+        Map<String, String> userLocation = locationService.getLocation(request);
+        if (userLocation.containsKey("loc")) {
+            String location = userLocation.get("loc");
+            user.setLocation(location);
+            userRepository.save(user);
+        }
     }
 
     private UserDetailsDto mapUserToUserDetailsDto(User user) {
