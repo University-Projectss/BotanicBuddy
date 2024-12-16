@@ -1,16 +1,17 @@
 package com.mops.bb_backend.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Table(name = "weather_forecasts")
 @Builder
 public class WeatherForecast {
     @Id
