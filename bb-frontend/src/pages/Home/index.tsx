@@ -22,6 +22,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { FileAcceptDetails } from "node_modules/@chakra-ui/react/dist/types/components/file-upload/namespace";
 import { useContext, useState } from "react";
 import PaginatedSection from "./PaginatedSection";
+import Weather from "./Weather";
 
 const Home = () => {
   const { authenticatedAccount } = useContext(AuthContext);
@@ -128,6 +129,7 @@ const Home = () => {
       </DialogRoot>
 
       <PaginatedSection />
+      <Weather />
     </Flex>
   );
 };
