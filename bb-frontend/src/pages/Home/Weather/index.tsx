@@ -11,6 +11,7 @@ function formatDate(date: Date) {
 const Weather = () => {
   const { data: forecast, isLoading } = useQuery({
     queryKey: ["forecast"],
+    retry: false,
     queryFn: async () => {
       const { data } = await apiClient.get(
         `/forecast/${formatDate(new Date())}`
