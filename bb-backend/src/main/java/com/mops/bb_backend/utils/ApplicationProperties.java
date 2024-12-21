@@ -20,4 +20,19 @@ public class ApplicationProperties {
 
     @Value( "${sendgrid.from.name}" )
     private String sendgridFromName;
+
+    @Value("${openweather.api.key}")
+    private String openWeatherApiKey;
+
+    @Value("${openweather.api.weather.url}")
+    private String openWeatherApiWeatherUrl;
+
+    @Value("${openweather.api.forecast.url}")
+    private String openWeatherApiForecastUrl;
+
+    @Value("${openweather.api.icons.url}")
+    private String openWeatherApiIconsUrl;
+
+    @Value("${geolocation.api.key}")
+    private String geolocationApiKey;
 }

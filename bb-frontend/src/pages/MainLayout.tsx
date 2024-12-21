@@ -6,6 +6,7 @@ import { ClientOnly, Flex, Image, Skeleton } from "@chakra-ui/react";
 import { useContext } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import AddPlantButton from "./Home/AddPlantButton";
 
 const MainLayout = () => {
   const { authenticatedAccount } = useContext(AuthContext);
@@ -40,6 +41,7 @@ const MainLayout = () => {
         />
 
         <Flex direction="row" alignItems="center" justify="center" gap={4}>
+          <AddPlantButton />
           <Link
             to="/chat"
             style={{
