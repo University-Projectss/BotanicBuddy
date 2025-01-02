@@ -33,4 +33,7 @@ public class User {
 
     @Column(name = "location")
     private String location;
+
+    @ManyToMany(mappedBy = "likedBy")
+    private List<Post> likedPosts;
 }
