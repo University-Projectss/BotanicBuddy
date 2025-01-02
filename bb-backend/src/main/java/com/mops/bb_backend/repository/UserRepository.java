@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +16,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     User findUserByAccountEmail(@Param("email") String email);
 
     Optional<User> findByUsername(String username);
+
+    @Query("SELECT u FROM User u JOIN FETCH u.account")
+    List<User> findAllUsers();
 }
