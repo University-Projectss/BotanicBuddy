@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class UserService {
     }
 
     private User createUser(Account account, String username, String photoUrl) {
-        var user = User.builder().account(account).username(username).photoUrl(photoUrl).build();
+        var user = User.builder().account(account).username(username).photoUrl(photoUrl).sendWeatherAlerts(true).build();
         return userRepository.save(user);
     }
 
@@ -61,6 +62,17 @@ public class UserService {
             user.setLocation(location);
             userRepository.save(user);
         }
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAllUsers();
+    }
+
+    public void toggleWeatherAlerts() {
+        var user = getAuthenticatedUser();
+        var sendWeatherAlerts = user.isSendWeatherAlerts();
+        user.setSendWeatherAlerts(!sendWeatherAlerts);
+        userRepository.save(user);
     }
 
     private UserDetailsDto mapUserToUserDetailsDto(User user) {

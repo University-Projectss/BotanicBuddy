@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,26 +30,50 @@ public class WeatherForecastService {
     private final UserService userService;
 
     public WeatherForecastDto getForecastByDate(LocalDate date) {
-
-        return weatherForecastRepository.findByDate(date)
-            .map(this::mapWeatherForecastToWeatherForecastDto)
-            .orElseGet(() -> {
-                fetchAndSaveWeatherData(date);
-
-                return weatherForecastRepository.findByDate(date)
-                        .map(this::mapWeatherForecastToWeatherForecastDto)
-                        .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST,
-                                "No forecast found for the provided date!"));
-            });
+        var user = userService.getAuthenticatedUser();
+        return getForecastByDateForUser(date, user);
     }
 
-    public void fetchAndSaveWeatherData(LocalDate date) {
+    private WeatherForecastDto getForecastByDateForUser(LocalDate date, User user) {
+
+        return weatherForecastRepository.findByDate(date, user)
+                .map(this::mapWeatherForecastToWeatherForecastDto)
+                .orElseGet(() -> {
+                    fetchAndSaveWeatherData(date, user);
+
+                    return weatherForecastRepository.findByDate(date, user)
+                            .map(this::mapWeatherForecastToWeatherForecastDto)
+                            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST,
+                                    "No forecast found for the provided date!"));
+                });
+    }
+
+    public WeatherForecastDto getTomorrowForecastForUser(User user) {
+        return getForecastByDateForUser(LocalDate.now().plusDays(1), user);
+    }
+
+    public boolean isExtremeWeather(WeatherForecastDto forecast) {
+        Set<String> extremeWeatherDescriptions = Set.of(
+                // Extreme Thunderstorms
+                "thunderstorm with heavy rain", "heavy thunderstorm", "ragged thunderstorm",
+                "thunderstorm with heavy drizzle",
+                // Extreme Rain
+                "very heavy rain", "extreme rain", "freezing rain", "heavy intensity shower rain", "ragged shower rain",
+                // Extreme Snow
+                "heavy snow", "heavy shower snow",
+                // Atmosphere
+                "volcanic ash", "squalls", "tornado"
+        );
+
+        return extremeWeatherDescriptions.contains(forecast.extremeCondition().toLowerCase());
+    }
+
+    public void fetchAndSaveWeatherData(LocalDate date, User user) {
         var useWeatherUrl = date.isEqual(LocalDate.now());
         if (!useWeatherUrl && (!date.isAfter(LocalDate.now()) || !date.isBefore(LocalDate.now().plusDays(6))))
             return;
 
         RestTemplate restTemplate = new RestTemplate();
-        var user = userService.getAuthenticatedUser();
 
         String location = user.getLocation();
         if (location == null) {
