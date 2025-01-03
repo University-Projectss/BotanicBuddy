@@ -43,4 +43,9 @@ public class PostController {
         postService.likePost(id);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/posts/{id}/like")
+    public ResponseEntity<Boolean> isLiked(@PathVariable String id) {
+        return new ResponseEntity<>(postService.isLiked(id), HttpStatus.OK);
+    }
 }

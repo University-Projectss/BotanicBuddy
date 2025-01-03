@@ -12,6 +12,5 @@ import java.util.UUID;
 
 @Repository
 public interface PostRepository extends CrudRepository<Post, UUID> {
-    @Query("SELECT p FROM Post p WHERE p.user <> :user")
-    Page<Post> findAllNotOwnedByUser(Pageable pageable, User user);
+    Page<Post> findAll(Pageable pageable);
 }

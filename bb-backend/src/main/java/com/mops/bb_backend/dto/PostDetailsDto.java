@@ -10,7 +10,8 @@ public record PostDetailsDto (
         String photoUrl,
         String uploadDate,
         String author,
-        int likes
+        int totalLikes,
+        boolean likedByUser
 ) {
 }
 
