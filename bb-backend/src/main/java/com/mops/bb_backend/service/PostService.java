@@ -29,9 +29,8 @@ public class PostService {
     }
 
     public PostPaginationDto getPostList(int pageNumber, int pageSize) {
-        var user = userService.getAuthenticatedUser();
         var pageable = PageRequest.of(pageNumber, pageSize);
-        var response = postRepository.findAllNotOwnedByUser(pageable, user);
+        var response = postRepository.findAll(pageable);
         var posts = response.getContent().stream().sorted(Comparator.comparing(Post::getUploadDate)
                 .thenComparing(Post::getTitle)).map(PostService::mapPostToPostDetailsDto).toList();
         return new PostPaginationDto(posts, response.getNumber(), response.getSize(),
@@ -50,8 +49,21 @@ public class PostService {
         var user = userService.getAuthenticatedUser();
         var post = postRepository.findById(convertStringToUUID(id))
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No post found with the provided ID!"));
+        
+        if (post.getLikedBy().contains(user)) {
+            post.getLikedBy().remove(user);
+            postRepository.save(post);
+            return;
+        }
         post.getLikedBy().add(user);
         postRepository.save(post);
+    }
+
+    public boolean isLiked(String id) {
+        var user = userService.getAuthenticatedUser();
+        var post = postRepository.findById(convertStringToUUID(id))
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No post found with the provided ID!"));
+        return post.getLikedBy().contains(user);
     }
 
     private static Post mapPostRegistrationDtoToPost(String title, String content, String photoUrl, User user) {
@@ -72,7 +84,8 @@ public class PostService {
                 .author(post.getUser().getUsername())
                 .photoUrl(post.getPhotoUrl())
                 .uploadDate(post.getUploadDate().toString())
-                .likes(post.getLikedBy().size())
+                .totalLikes(post.getLikedBy().size())
+                .likedByUser(post.getLikedBy().contains(post.getUser()))
                 .build();
     }
 }
