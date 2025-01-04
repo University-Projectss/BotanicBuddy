@@ -52,6 +52,16 @@ const MainLayout = () => {
             Chat
           </Link>
 
+          <Link
+            to="/feed"
+            style={{
+              textDecoration:
+                window.location.pathname === "/feed" ? "underline" : "",
+            }}
+          >
+            Feed
+          </Link>
+
           <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
             <ColorModeToggle />
           </ClientOnly>
