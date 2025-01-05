@@ -8,7 +8,7 @@ public record PostDetailsDto (
         String title,
         String content,
         String photoUrl,
-        String uploadDate,
+        String timestamp,
         String author,
         int totalLikes,
         boolean likedByUser

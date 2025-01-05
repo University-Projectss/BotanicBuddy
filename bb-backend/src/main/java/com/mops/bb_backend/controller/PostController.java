@@ -38,7 +38,7 @@ public class PostController {
         return new ResponseEntity<>(postService.getPostDetails(id), HttpStatus.OK);
     }
 
-    @PostMapping("/posts/{id}/like")
+    @PatchMapping("/posts/{id}/like")
     public ResponseEntity<Void> likePost(@PathVariable String id) {
         postService.likePost(id);
         return ResponseEntity.status(HttpStatus.CREATED).build();

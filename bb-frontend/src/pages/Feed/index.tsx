@@ -51,7 +51,7 @@ const Feed = () => {
   //optimistic update
   const likeMutation = useMutation({
     mutationFn: async (post: Post) =>
-      await apiClient.post(`/posts/${post.id}/like`),
+      await apiClient.patch(`/posts/${post.id}/like`),
     onMutate: async (post: Post) => {
       await queryClient.cancelQueries({ queryKey: ["feed"] });
 
