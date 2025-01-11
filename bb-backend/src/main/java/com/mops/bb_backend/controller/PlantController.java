@@ -3,6 +3,7 @@ package com.mops.bb_backend.controller;
 import com.mops.bb_backend.dto.PlantDetailsDto;
 import com.mops.bb_backend.dto.PlantPaginationDto;
 import com.mops.bb_backend.dto.PlantRegistrationDto;
+import com.mops.bb_backend.dto.PlantUpdateDto;
 import com.mops.bb_backend.service.PlantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,5 +39,11 @@ public class PlantController {
     @GetMapping("/plants/{id}")
     public ResponseEntity<PlantDetailsDto> getPlantDetails(@PathVariable String id) {
         return new ResponseEntity<>(plantService.getPlantDetails(id), HttpStatus.OK);
+    }
+
+    @PatchMapping("/plants/{id}")
+    public ResponseEntity<Void> updatePlantDetails(@PathVariable String id, PlantUpdateDto plantUpdateDto) {
+        plantService.updatePlantDetails(id, plantUpdateDto.actionType());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

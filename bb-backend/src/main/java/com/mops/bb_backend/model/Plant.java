@@ -51,4 +51,7 @@ public class Plant {
 
     @Column(name = "temperature")
     private String temperature;
+
+    @Column(name = "is_archived")
+    private boolean isArchived;
 }
