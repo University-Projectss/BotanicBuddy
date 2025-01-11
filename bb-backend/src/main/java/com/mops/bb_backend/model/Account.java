@@ -29,7 +29,7 @@ public class Account implements UserDetails {
     @Enumerated(EnumType.STRING)
     protected Role role;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

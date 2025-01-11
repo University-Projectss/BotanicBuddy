@@ -18,12 +18,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeatherForecast> weatherForecasts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Plant> plants;
 
     @Column(name = "username", nullable = false, length = 30, unique = true)
     private String username;

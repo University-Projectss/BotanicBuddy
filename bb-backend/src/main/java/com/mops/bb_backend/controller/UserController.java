@@ -37,4 +37,9 @@ public class UserController {
         userService.toggleWeatherAlerts();
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/accounts")
+    public void deleteUserAccount() {
+        userService.deleteUserAccount();
+    }
 }

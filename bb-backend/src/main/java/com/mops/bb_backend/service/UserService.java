@@ -6,6 +6,7 @@ import com.mops.bb_backend.model.Account;
 import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class UserService {
     private final AccountService accountService;
     private final LocationService locationService;
 
+    @Transactional
     public void createUserAccount(String email, String password, String username, String photoUrl) {
         validateUserCredentials(email, username);
         var account = accountService.createAccount(email, password);
@@ -73,6 +75,11 @@ public class UserService {
         var sendWeatherAlerts = user.isSendWeatherAlerts();
         user.setSendWeatherAlerts(!sendWeatherAlerts);
         userRepository.save(user);
+    }
+
+    public void deleteUserAccount() {
+        var user = getAuthenticatedUser();
+        userRepository.delete(user);
     }
 
     private UserDetailsDto mapUserToUserDetailsDto(User user) {
