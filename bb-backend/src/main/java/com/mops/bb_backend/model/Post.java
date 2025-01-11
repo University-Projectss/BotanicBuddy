@@ -3,7 +3,7 @@ package com.mops.bb_backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +32,8 @@ public class Post {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "upload_date", nullable = false)
-    private LocalDate uploadDate;
+    @Column(name = "timestamp", nullable = false)
+    private LocalDateTime timestamp;
 
     @ManyToMany
     @JoinTable(
