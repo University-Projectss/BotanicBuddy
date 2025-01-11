@@ -31,4 +31,10 @@ public class UserController {
     public ResponseEntity<UserDetailsDto> getAuthenticatedUserDetails() {
         return ResponseEntity.ok(userService.getAuthenticatedUserProfile());
     }
+
+    @PostMapping("/weather-alerts-toggle")
+    public ResponseEntity<Void> toggleWeatherAlerts() {
+        userService.toggleWeatherAlerts();
+        return ResponseEntity.ok().build();
+    }
 }

@@ -34,6 +34,9 @@ public class User {
     @Column(name = "location")
     private String location;
 
+    @Column(name = "send_weather_alerts", nullable = false)
+    private boolean sendWeatherAlerts;
+
     @ManyToMany(mappedBy = "likedBy")
     private List<Post> likedPosts;
 }

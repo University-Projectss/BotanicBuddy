@@ -31,6 +31,8 @@ import static com.mops.bb_backend.utils.Converter.formatDate;
 public class EmailService {
     private final ApplicationProperties applicationProperties;
     private final PlantService plantService;
+    private final WeatherForecastService weatherForecastService;
+    private final UserService userService;
 
     @Scheduled(cron = "${sendgrid.water.reminder.scheduler}")
     @Transactional
@@ -59,6 +61,34 @@ public class EmailService {
                 }
             });
         }
+    }
+
+    @Scheduled(cron = "${sendgrid.weather.alert.scheduler}")
+    @Transactional
+    public void sendWeatherAlert() {
+        var users = userService.getAllUsers();
+
+        users.forEach(user -> {
+            try {
+                var forecast = weatherForecastService.getTomorrowForecastForUser(user);
+
+                if (weatherForecastService.isExtremeWeather(forecast) && user.isSendWeatherAlerts()) {
+                    var templatePath = "src/main/resources/templates/weather-alert-template.html";
+
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("username", user.getUsername());
+                    placeholders.put("weather_condition", forecast.extremeCondition());
+                    placeholders.put("min_temperature", String.valueOf(forecast.minTemperature()));
+                    placeholders.put("max_temperature", String.valueOf(forecast.maxTemperature()));
+                    placeholders.put("date", formatDate(forecast.date()));
+
+                    var emailContent = loadHtmlTemplate(templatePath, placeholders);
+                    sendEmail(user.getAccount().getEmail(), "Weather Alert: Extreme Weather Expected Tomorrow!", emailContent);
+                }
+            } catch (Exception exception) {
+                log.error("Error occurred while sending the weather alert for user " + user.getUsername() + " at " + LocalDateTime.now() + ": " + exception.getMessage());
+            }
+        });
     }
 
     public void sendEmail(String to, String subject, String htmlContent) {
