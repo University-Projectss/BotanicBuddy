@@ -42,7 +42,7 @@ public class PlantController {
     }
 
     @PatchMapping("/plants/{id}")
-    public ResponseEntity<Void> updatePlantDetails(@PathVariable String id, PlantUpdateDto plantUpdateDto) {
+    public ResponseEntity<Void> updatePlantDetails(@PathVariable String id, @RequestBody PlantUpdateDto plantUpdateDto) {
         plantService.updatePlantDetails(id, plantUpdateDto.actionType());
         return ResponseEntity.status(HttpStatus.OK).build();
     }

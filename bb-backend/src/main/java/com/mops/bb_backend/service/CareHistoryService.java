@@ -22,6 +22,7 @@ public class CareHistoryService {
     public List<CareHistory> getPlantCareHistory(Plant plant) {
         return careHistoryRepository.findByPlant(plant)
                 .stream().sorted(Comparator.comparing(CareHistory::getDate).reversed())
+                .sorted(Comparator.comparing(CareHistory::getTime).reversed())
                 .toList();
     }
 
