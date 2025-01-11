@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mops.bb_backend.dto.PlantDetailsDto;
 import com.mops.bb_backend.dto.PlantPaginationDto;
 import com.mops.bb_backend.exception.CustomException;
+import com.mops.bb_backend.model.ActionType;
+import com.mops.bb_backend.model.CareHistory;
 import com.mops.bb_backend.model.Plant;
 import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.PlantRepository;
@@ -27,6 +29,7 @@ public class PlantService {
     private final PlantRepository plantRepository;
     private final UserService userService;
     private final CareRecommendationService careRecommendationService;
+    private final CareHistoryService careHistoryService;
 
     public void addPlant(String commonName, String scientificName, String family, String photoUrl) {
         var user = userService.getAuthenticatedUser();
@@ -50,7 +53,10 @@ public class PlantService {
         var plant = plantRepository.findById(uuid)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No plant found with the provided ID!"));
 
-        return mapPlantToPlantDetailsDto(plant);
+        var plantDetailsDto = mapPlantToPlantDetailsDto(plant);
+        var careHistory = careHistoryService.getPlantCareHistoryDto(plant);
+
+        return plantDetailsDto.toBuilder().careHistory(careHistory).build();
     }
 
     public void setCareRecommendation(Plant plant) {
@@ -72,13 +78,45 @@ public class PlantService {
 
     public List<Plant> getPlantsToWater() {
         List<Plant> plantsToWater = new ArrayList<>();
+
         plantRepository.findAll().forEach(plant -> {
-            var daysBetween = ChronoUnit.DAYS.between(plant.getUploadDate(), LocalDate.now());
-            if (daysBetween % plant.getWateringFrequency() == 0) {
-                plantsToWater.add(plant);
+            var careHistory = careHistoryService.getPlantCareHistory(plant);
+            var lastWateringRegistration = careHistory.stream()
+                    .filter(registration -> ActionType.WATER.equals(registration.getAction()))
+                    .max(Comparator.comparing(CareHistory::getDate));
+
+            if (careHistory.isEmpty() || lastWateringRegistration.isEmpty()) {
+                var daysBetween = ChronoUnit.DAYS.between(plant.getUploadDate(), LocalDate.now());
+                if (daysBetween % plant.getWateringFrequency() == 0) {
+                    plantsToWater.add(plant);
+                }
+            } else {
+                var lastWateringDay = lastWateringRegistration.get().getDate();
+                var daysBetween = ChronoUnit.DAYS.between(lastWateringDay, LocalDate.now());
+                if (daysBetween % plant.getWateringFrequency() == 0) {
+                    plantsToWater.add(plant);
+                }
             }
         });
+
         return plantsToWater;
+    }
+
+    public void updatePlantDetails(String id, ActionType actionType) {
+        var uuid = convertStringToUUID(id);
+        var plant = plantRepository.findById(uuid)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No plant found with the provided ID!"));
+
+        switch (actionType) {
+            case WATER -> careHistoryService.waterPlant(plant);
+            case ARCHIVE -> archivePlant(plant);
+            case CHANGE_SOIL -> careHistoryService.changePlantSoil(plant);
+        }
+    }
+
+    private void archivePlant(Plant plant) {
+        plant.setArchived(true);
+        plantRepository.save(plant);
     }
 
     private static Plant mapPlantRegistrationDtoToPlant(String commonName, String scientificName, String family, String photoUrl, User user) {
@@ -88,6 +126,7 @@ public class PlantService {
                 .family(family)
                 .photoUrl(photoUrl)
                 .uploadDate(LocalDate.now())
+                .isArchived(false)
                 .user(user)
                 .build();
     }
@@ -105,6 +144,7 @@ public class PlantService {
                 .light(plant.getLight())
                 .soil(plant.getSoil())
                 .temperature(plant.getTemperature())
+                .isArchived(plant.isArchived())
                 .build();
     }
 }
