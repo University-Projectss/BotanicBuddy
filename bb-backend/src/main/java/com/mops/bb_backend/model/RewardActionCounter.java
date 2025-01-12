@@ -17,6 +17,7 @@ public class RewardActionCounter {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
     private RewardAction action;
 

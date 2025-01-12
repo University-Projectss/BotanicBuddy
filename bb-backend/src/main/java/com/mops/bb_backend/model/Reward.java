@@ -17,9 +17,11 @@ public class Reward {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "level", nullable = false)
     private RewardLevel level;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
     private RewardAction action;
 

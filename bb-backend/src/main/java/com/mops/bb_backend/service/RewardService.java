@@ -56,15 +56,22 @@ public class RewardService {
         List<AchievedRewardDto> achievedRewards = new ArrayList<>();
         List<RewardDto> notAchievedRewards = new ArrayList<>();
         var points = 0;
-        for (var reward : rewards) {
-            for (var userReward : userRewards) {
-                if (userReward.getReward().equals(reward)) {
-                    var achievedRewardDto = mapRewardToAchievedRewardDto(reward, userReward.getDateAchieved());
-                    achievedRewards.add(achievedRewardDto);
-                    points += reward.getPoints();
-                } else {
-                    var notAchievedRewardDto = mapRewardToRewardDto(reward);
-                    notAchievedRewards.add(notAchievedRewardDto);
+        if (userRewards.isEmpty()) {
+            for (var reward : rewards) {
+                var notAchievedRewardDto = mapRewardToRewardDto(reward);
+                notAchievedRewards.add(notAchievedRewardDto);
+            }
+        } else {
+            for (var reward : rewards) {
+                for (var userReward : userRewards) {
+                    if (userReward.getReward().equals(reward)) {
+                        var achievedRewardDto = mapRewardToAchievedRewardDto(reward, userReward.getDateAchieved());
+                        achievedRewards.add(achievedRewardDto);
+                        points += reward.getPoints();
+                    } else {
+                        var notAchievedRewardDto = mapRewardToRewardDto(reward);
+                        notAchievedRewards.add(notAchievedRewardDto);
+                    }
                 }
             }
         }

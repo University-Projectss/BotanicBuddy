@@ -33,10 +33,10 @@ public class PlantService {
     public void addPlant(String commonName, String scientificName, String family, String photoUrl) {
         var user = userService.getAuthenticatedUser();
         var plant = mapPlantRegistrationDtoToPlant(commonName, scientificName, family, photoUrl, user);
+        handleDifferentTypesOfPlantsReward(plant, user);
         setCareRecommendation(plant);
         plantRepository.save(plant);
         rewardService.handleUserReward(RewardAction.REGISTER_PLANT, user);
-        handleDifferentTypesOfPlantsReward(plant, user);
     }
 
     private void handleDifferentTypesOfPlantsReward(Plant newPlant, User user) {
