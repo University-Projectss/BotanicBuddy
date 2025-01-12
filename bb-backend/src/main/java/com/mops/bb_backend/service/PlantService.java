@@ -38,10 +38,10 @@ public class PlantService {
         plantRepository.save(plant);
     }
 
-    public PlantPaginationDto getPlantList(int pageNumber, int pageSize) {
+    public PlantPaginationDto getPlantList(int pageNumber, int pageSize, boolean isArchived) {
         var user = userService.getAuthenticatedUser();
         var pageable = PageRequest.of(pageNumber, pageSize);
-        var response = plantRepository.findAllByUser(pageable, user);
+        var response = plantRepository.findAllByUserAndIsArchived(pageable, user, isArchived);
         var plants = response.getContent().stream().sorted(Comparator.comparing(Plant::getUploadDate)
                 .thenComparing(Plant::getCommonName)).map(PlantService::mapPlantToPlantDetailsDto).toList();
         return new PlantPaginationDto(plants, response.getNumber(), response.getSize(),
