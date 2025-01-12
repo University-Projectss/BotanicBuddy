@@ -1,9 +1,7 @@
 package com.mops.bb_backend.service;
 
 import com.mops.bb_backend.dto.CareHistoryDto;
-import com.mops.bb_backend.model.ActionType;
-import com.mops.bb_backend.model.CareHistory;
-import com.mops.bb_backend.model.Plant;
+import com.mops.bb_backend.model.*;
 import com.mops.bb_backend.repository.CareHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import java.util.List;
 public class CareHistoryService {
 
     private final CareHistoryRepository careHistoryRepository;
+    private final RewardService rewardService;
 
     public List<CareHistory> getPlantCareHistory(Plant plant) {
         return careHistoryRepository.findByPlant(plant)
@@ -32,22 +31,24 @@ public class CareHistoryService {
                 .toList();
     }
 
-    public void changePlantSoil(Plant plant) {
+    public void changePlantSoil(Plant plant, User user) {
         var careHistoryRegistration = CareHistory.builder()
                 .date(LocalDate.now())
                 .time(LocalTime.now())
                 .action(ActionType.CHANGE_SOIL)
                 .plant(plant).build();
         careHistoryRepository.save(careHistoryRegistration);
+        rewardService.handleUserReward(RewardAction.CHANGE_SOIL, user);
     }
 
-    public void waterPlant(Plant plant) {
+    public void waterPlant(Plant plant, User user) {
         var careHistoryRegistration = CareHistory.builder()
                 .date(LocalDate.now())
                 .time(LocalTime.now())
                 .action(ActionType.WATER)
                 .plant(plant).build();
         careHistoryRepository.save(careHistoryRegistration);
+        rewardService.handleUserReward(RewardAction.WATERING, user);
     }
 
     private static CareHistoryDto mapCareHistoryToCareHistoryDto(CareHistory careHistory) {
