@@ -10,6 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.UUID;
 
 public interface PlantRepository extends CrudRepository<Plant, UUID> {
-    @Query("SELECT p FROM Plant p WHERE p.user = :user")
-    Page<Plant> findAllByUser(Pageable pageable, User user);
+    @Query("SELECT p FROM Plant p WHERE p.user = :user AND p.isArchived = :isArchived")
+    Page<Plant> findAllByUserAndIsArchived(Pageable pageable, User user, boolean isArchived);
 }
