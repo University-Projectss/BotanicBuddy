@@ -42,4 +42,7 @@ public class User {
 
     @ManyToMany(mappedBy = "likedBy")
     private List<Post> likedPosts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RewardActionCounter> rewardActionCounters;
 }

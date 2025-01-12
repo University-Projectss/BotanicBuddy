@@ -20,12 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountService accountService;
     private final LocationService locationService;
+    private final RewardService rewardService;
 
     @Transactional
     public void createUserAccount(String email, String password, String username, String photoUrl) {
         validateUserCredentials(email, username);
         var account = accountService.createAccount(email, password);
         var user = createUser(account, username, photoUrl);
+        rewardService.initializeRewardCountersForUser(user);
         accountService.linkUserToAccount(user, account);
     }
 

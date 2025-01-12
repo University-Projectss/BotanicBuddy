@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mops.bb_backend.dto.PlantDetailsDto;
 import com.mops.bb_backend.dto.PlantPaginationDto;
 import com.mops.bb_backend.exception.CustomException;
-import com.mops.bb_backend.model.ActionType;
-import com.mops.bb_backend.model.CareHistory;
-import com.mops.bb_backend.model.Plant;
-import com.mops.bb_backend.model.User;
+import com.mops.bb_backend.model.*;
 import com.mops.bb_backend.repository.PlantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mops.bb_backend.utils.Converter.convertStringToUUID;
 
@@ -30,12 +28,23 @@ public class PlantService {
     private final UserService userService;
     private final CareRecommendationService careRecommendationService;
     private final CareHistoryService careHistoryService;
+    private final RewardService rewardService;
 
     public void addPlant(String commonName, String scientificName, String family, String photoUrl) {
         var user = userService.getAuthenticatedUser();
         var plant = mapPlantRegistrationDtoToPlant(commonName, scientificName, family, photoUrl, user);
+        handleDifferentTypesOfPlantsReward(plant, user);
         setCareRecommendation(plant);
         plantRepository.save(plant);
+        rewardService.handleUserReward(RewardAction.REGISTER_PLANT, user);
+    }
+
+    private void handleDifferentTypesOfPlantsReward(Plant newPlant, User user) {
+        var userPlants = plantRepository.findByUser(user);
+        var species = userPlants.stream().map(Plant::getScientificName).collect(Collectors.toSet());
+        if (!species.contains(newPlant.getScientificName())) {
+            rewardService.handleUserReward(RewardAction.DIFFERENT_TYPES_OF_PLANTS, user);
+        }
     }
 
     public PlantPaginationDto getPlantList(int pageNumber, int pageSize, boolean isArchived) {
@@ -103,14 +112,15 @@ public class PlantService {
     }
 
     public void updatePlantDetails(String id, ActionType actionType) {
+        var user = userService.getAuthenticatedUser();
         var uuid = convertStringToUUID(id);
         var plant = plantRepository.findById(uuid)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "No plant found with the provided ID!"));
 
         switch (actionType) {
-            case WATER -> careHistoryService.waterPlant(plant);
+            case WATER -> careHistoryService.waterPlant(plant, user);
             case ARCHIVE -> archivePlant(plant);
-            case CHANGE_SOIL -> careHistoryService.changePlantSoil(plant);
+            case CHANGE_SOIL -> careHistoryService.changePlantSoil(plant, user);
         }
     }
 
