@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RewardService {
 
-    private final UserService userService;
     private final RewardRepository rewardRepository;
     private final UserRewardRepository userRewardRepository;
     private final RewardActionCounterRepository rewardActionCounterRepository;
@@ -50,8 +49,7 @@ public class RewardService {
         }
     }
 
-    public UserRewardsDto getUserRewards() {
-        var user = userService.getAuthenticatedUser();
+    public UserRewardsDto getUserRewards(User user) {
         var rewards = rewardRepository.findAll();
         var userRewards = userRewardRepository.findByUser(user);
 
