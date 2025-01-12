@@ -7,9 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface PlantRepository extends CrudRepository<Plant, UUID> {
     @Query("SELECT p FROM Plant p WHERE p.user = :user AND p.isArchived = :isArchived")
     Page<Plant> findAllByUserAndIsArchived(Pageable pageable, User user, boolean isArchived);
+
+    @Query("SELECT p FROM Plant p WHERE p.user = :user")
+    List<Plant> findByUser(User user);
 }
