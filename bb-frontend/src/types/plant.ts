@@ -14,6 +14,7 @@ export interface Plant {
   family: string;
   photoUrl: string;
   uploadDate: string;
+  isArchived: boolean;
 }
 
 export interface PlantDetailResponse {
@@ -28,4 +29,10 @@ export interface PlantDetailResponse {
   light: string;
   soil: string;
   temperature: string;
+  isArchived: boolean;
+  careHistory: {
+    date: string;
+    time: string;
+    action: string;
+  }[];
 }

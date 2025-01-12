@@ -66,7 +66,7 @@ const AddPlantButton = () => {
 
         await apiClient.post("/plants", {
           photoUrl: documentUrl,
-          commonName: data.results[0].species?.commonNames?.[0] ?? "",
+          commonName: data.results[0].species?.commonNames?.[0] ?? data.results[0].species?.scientificName,
           scientificName: data.results[0].species?.scientificName ?? "",
           family: data.results[0].species?.family?.scientificName ?? "",
         });
