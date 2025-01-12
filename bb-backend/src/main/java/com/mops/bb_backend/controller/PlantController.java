@@ -32,8 +32,9 @@ public class PlantController {
     @GetMapping("/plants")
     public ResponseEntity<PlantPaginationDto> getPlantList(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        return new ResponseEntity<>(plantService.getPlantList(pageNumber, pageSize), HttpStatus.OK);
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "isArchived", defaultValue = "false", required = false) boolean isArchived) {
+        return new ResponseEntity<>(plantService.getPlantList(pageNumber, pageSize, isArchived), HttpStatus.OK);
     }
 
     @GetMapping("/plants/{id}")
