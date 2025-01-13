@@ -52,9 +52,12 @@ public class CareHistoryService {
     }
 
     private static CareHistoryDto mapCareHistoryToCareHistoryDto(CareHistory careHistory) {
+        LocalDate sanitizedDate = careHistory.getDate(); 
+        LocalTime sanitizedTime = careHistory.getTime().withNano(0);
+
         return CareHistoryDto.builder()
-                .date(careHistory.getDate())
-                .time(careHistory.getTime())
+                .date(sanitizedDate)
+                .time(sanitizedTime)
                 .action(careHistory.getAction())
                 .build();
     }
