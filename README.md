@@ -1,10 +1,25 @@
-# BotanicBuddy
+# 🌱 BotanicBuddy
 
-Aplicația web de îngrijire a plantelor este destinată utilizatorilor care doresc să își gestioneze și să îngrijească eficient plantele din grădină sau din apartament. Aceasta permite utilizatorilor să își creeze un profil personalizat, unde pot adăuga plantele lor prin încărcarea unei poze. Odată ce imaginea este încărcată, aplicația detectează automat tipul plantei. După identificarea plantei, informațiile referitoare la îngrijirea acesteia (cum ar fi frecvența udării, tipul de sol necesar și nivelul de lumină recomandat) sunt generate pe baza numelui plantei identificat.
+### 🌼 Documentația completă este disponibilă [aici](https://github.com/University-Projectss/BotanicBuddy/wiki/AMSS-%E2%80%90-Prezentare).
 
-Aplicația oferă și funcționalități de gestionare a istoricului de îngrijire a plantelor, permițând utilizatorilor să vizualizeze activitățile trecute, precum udarea, fertilizarea sau replantarea. Pe lângă gestionarea plantelor, aplicația trimite notificari pentru a reaminti utilizatorilor când trebuie să ude sau să îngrijească plantele. Notificările sunt personalizate în funcție de nevoile fiecărei plante și pot fi configurate după preferințele utilizatorilor.
+### 🌼 Descriere:
 
-O altă caracteristică a aplicației este obținerea datelor meteo locale. Aceste informații sunt folosite pentru a ajusta recomandările de îngrijire a plantelor de exterior, asigurând astfel că plantele primesc îngrijirea optimă în funcție de condițiile climatice reale. În plus, aplicația include un sistem ChatBot care oferă suport utilizatorilor. ChatBot-ul poate răspunde la întrebări generale despre îngrijirea plantelor sau poate oferi informații specifice despre o anumită plantă din colecția utilizatorului.
+Aplicație de gestionarea și îngrijirea plantelor, cu urmatoarele functionalitati:
+- 🖼️ Detectarea automată a plantei dintr-o imagine încărcată
+- 📋 Recomandări personalizate pentru udare, lumină și sol
+- 📊 Istoric complet al activităților de îngrijire
+- 🔔 Notificări smart, adaptate fiecărei plante
+- ☀️ Integrare meteo pentru îngrijirea plantelor de exterior
+- 🤖 ChatBot pentru răspunsuri rapide
+- 🏆 Gamificare și 🎭 comunitate interactivă
 
-Pentru a încuraja implicarea activă, aplicația oferă un sistem de recompense și insigne virtuale pentru sarcinile îndeplinite. Acest sistem de gamificare stimulează utilizatorii să rămână implicați în îngrijirea plantelor lor. Aplicația are și o componentă socială, permițând utilizatorilor să creeze postări cu plantele lor în secțiunea dedicată comunității. Utilizatorii pot încărca imagini și descrieri ale plantelor, iar ceilalți membri ai comunității pot interacționa prin reacții.
+### 🌼 Paginile aplicatiei:
+![image](https://github.com/user-attachments/assets/3749ae0a-d709-4da0-af3e-1cabbba780d8)
+![image](https://github.com/user-attachments/assets/9dc5b9e1-b09e-4ca4-a9d1-8c5e3c949357)
+![image](https://github.com/user-attachments/assets/1c81c7ad-8e3f-4199-91e4-1cc7c8223e51)
+![image](https://github.com/user-attachments/assets/96d674e9-0699-4169-9395-c4fa8b9faf6e)
+![image](https://github.com/user-attachments/assets/14ddd173-779f-4eb1-98ba-982d84cdae1a)
+![image](https://github.com/user-attachments/assets/0cab8477-7192-4c32-bd27-656625fa9943)
+
+
 
