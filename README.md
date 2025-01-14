@@ -1,6 +1,6 @@
 # 🌱 BotanicBuddy
 
-### 🌼 Documentația completă este disponibilă [aici](https://github.com/University-Projectss/BotanicBuddy/wiki/AMSS-%E2%80%90-Prezentare).
+### 🌼 Documentația completă este disponibilă [aici](https://github.com/University-Projectss/BotanicBuddy/wiki).
 
 ### 🌼 Descriere:
 
@@ -18,8 +18,8 @@ Aplicație de gestionarea și îngrijirea plantelor, cu urmatoarele functionalit
 ![image](https://github.com/user-attachments/assets/9dc5b9e1-b09e-4ca4-a9d1-8c5e3c949357)
 ![image](https://github.com/user-attachments/assets/1c81c7ad-8e3f-4199-91e4-1cc7c8223e51)
 ![image](https://github.com/user-attachments/assets/96d674e9-0699-4169-9395-c4fa8b9faf6e)
-![image](https://github.com/user-attachments/assets/14ddd173-779f-4eb1-98ba-982d84cdae1a)
 ![image](https://github.com/user-attachments/assets/1a894f39-00ce-4d92-a982-e2f03b047fda)
+![image](https://github.com/user-attachments/assets/14ddd173-779f-4eb1-98ba-982d84cdae1a)
 ![image](https://github.com/user-attachments/assets/0cab8477-7192-4c32-bd27-656625fa9943)
 
 
