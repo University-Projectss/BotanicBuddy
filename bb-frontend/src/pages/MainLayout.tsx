@@ -2,7 +2,14 @@ import { AuthContext } from "@/App";
 import { ColorModeToggle } from "@/color-mode-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { Toaster } from "@/components/ui/toaster";
-import { ClientOnly, Flex, Image, Skeleton, Button, Text } from "@chakra-ui/react";
+import {
+  ClientOnly,
+  Flex,
+  Image,
+  Skeleton,
+  Button,
+  Text,
+} from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -17,7 +24,6 @@ import {
 
 import {
   DialogRoot,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -30,14 +36,13 @@ import {
 import { apiClient } from "@/apiClient";
 import { Switch } from "@/components/ui/switch";
 
-
 const MainLayout = () => {
   const { authenticatedAccount } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEmailNotificationsEnabled, setIsEmailNotificationsEnabled] =
-    useState(false); 
+    useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("bbToken");
@@ -133,24 +138,32 @@ const MainLayout = () => {
               />
             </MenuTrigger>
             <MenuContent>
-
-            <MenuItem value="email-notifications" closeOnSelect={false}>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-              gap={4} 
-            >
-              <Text>Receive Email Notifications</Text>
-              <Switch
-                checked={isEmailNotificationsEnabled}
-                onChange={(e) => {
-                  e.stopPropagation(); 
-                  handleToggleEmailNotifications();
+              <MenuItem
+                value="rewards"
+                onClick={() => {
+                  navigate("/rewards");
                 }}
-              />
-            </Flex>
-          </MenuItem>
+              >
+                <Text>Rewards</Text>
+              </MenuItem>
+
+              <MenuItem value="email-notifications" closeOnSelect={false}>
+                <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  width="100%"
+                  gap={4}
+                >
+                  <Text>Receive Email Notifications</Text>
+                  <Switch
+                    checked={isEmailNotificationsEnabled}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleToggleEmailNotifications();
+                    }}
+                  />
+                </Flex>
+              </MenuItem>
 
               <MenuItem value="logout" onClick={handleLogout}>
                 Logout
@@ -162,7 +175,6 @@ const MainLayout = () => {
               >
                 Delete Account
               </MenuItem>
-
             </MenuContent>
           </MenuRoot>
         </Flex>
