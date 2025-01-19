@@ -82,7 +82,6 @@ public class PlantService {
         } catch (JsonProcessingException e) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse care recommendations: " + e.getMessage());
         }
-        plantRepository.save(plant);
     }
 
     public List<Plant> getPlantsToWater() {

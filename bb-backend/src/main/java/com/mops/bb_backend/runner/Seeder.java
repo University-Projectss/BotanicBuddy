@@ -15,7 +15,9 @@ public class Seeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        userService.createUserAccount("user1@example.com", "password", "user1", "user1photo");
-        rewardService.seedRewards();
+        if (userService.getAllUsers().isEmpty()) {
+            userService.createUserAccount("user1@example.com", "password", "user1", "user1photo");
+            rewardService.seedRewards();
+        }
     }
 }

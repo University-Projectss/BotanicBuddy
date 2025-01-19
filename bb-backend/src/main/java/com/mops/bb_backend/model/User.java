@@ -40,9 +40,12 @@ public class User {
     @Column(name = "send_weather_alerts", nullable = false)
     private boolean sendWeatherAlerts;
 
-    @ManyToMany(mappedBy = "likedBy")
+    @ManyToMany(mappedBy = "likedBy", cascade = CascadeType.ALL)
     private List<Post> likedPosts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RewardActionCounter> rewardActionCounters;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserReward> userRewards;
 }
