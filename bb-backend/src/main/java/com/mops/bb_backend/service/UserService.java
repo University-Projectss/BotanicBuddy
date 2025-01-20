@@ -89,6 +89,7 @@ public class UserService {
                 .email(user.getAccount().getEmail())
                 .username(user.getUsername())
                 .photoUrl(user.getPhotoUrl())
+                .sendWeatherAlerts(user.isSendWeatherAlerts())
                 .build();
     }
 }

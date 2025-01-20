@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -54,4 +55,7 @@ public class Plant {
 
     @Column(name = "is_archived")
     private boolean isArchived;
+
+    @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CareHistory> careHistories;
 }

@@ -28,7 +28,7 @@ public class CareHistory {
     @Column(name = "action", nullable = false)
     private ActionType action;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "plant_id", referencedColumnName = "id")
     private Plant plant;
 }
