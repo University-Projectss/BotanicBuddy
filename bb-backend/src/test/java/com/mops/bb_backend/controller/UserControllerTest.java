@@ -2,7 +2,6 @@ package com.mops.bb_backend.controller;
 
 import com.mops.bb_backend.dto.UserRegistrationDto;
 import com.mops.bb_backend.model.Account;
-import com.mops.bb_backend.model.User;
 import com.mops.bb_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
@@ -15,11 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
