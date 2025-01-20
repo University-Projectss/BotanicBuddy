@@ -21,6 +21,8 @@ Aplicație de gestionarea și îngrijirea plantelor, cu urmatoarele functionalit
 ![image](https://github.com/user-attachments/assets/1a894f39-00ce-4d92-a982-e2f03b047fda)
 ![image](https://github.com/user-attachments/assets/14ddd173-779f-4eb1-98ba-982d84cdae1a)
 ![image](https://github.com/user-attachments/assets/0cab8477-7192-4c32-bd27-656625fa9943)
+![image](https://github.com/user-attachments/assets/b4ca8487-0806-419f-a2b6-97888ee4d542)
+
 
 
 
