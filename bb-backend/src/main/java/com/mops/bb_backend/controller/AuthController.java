@@ -16,6 +16,7 @@ package com.mops.bb_backend.controller;
  * limitations under the License.
  */
 
+import com.mops.bb_backend.service.RewardService;
 import com.mops.bb_backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class AuthController {
     final JwtEncoder encoder;
 
     private final UserService userService;
+    private final RewardService rewardService;
 
     @PostMapping("/auth/login")
     public String login(Authentication authentication, HttpServletRequest request) {
@@ -56,6 +58,7 @@ public class AuthController {
                 .build();
 
         userService.setUserLocation(request);
+        rewardService.seedRewards();
 
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
